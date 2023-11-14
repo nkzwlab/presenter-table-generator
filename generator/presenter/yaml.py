@@ -57,12 +57,16 @@ def per_person(
     kind: PresentationKind, kg: str, person: str | dict[str, str]
 ) -> Presenter:
     loginname = person
-    title = None
+    presenter = None
+
     if isinstance(person, dict):
         # It must be `"loginname": "title"` form
         keys = list(person.keys())
         loginname = keys[0]
         title = person.get(loginname)
 
-    presenter = Presenter(loginname, kg, kind, title=title)
+        presenter = Presenter(loginname, kg, kind, title=title)
+    else:
+        presenter = Presenter(loginname, kg, kind)
+
     return presenter
