@@ -29,10 +29,10 @@ class Break:
         good = True
 
         if self.after is not None:
-            good = good and self.after < present
+            good = good and self.after <= present
 
         if self.before is not None:
-            good = good and present < self.before <= next_end
+            good = good and present <= self.before < next_end
 
         return good
 
