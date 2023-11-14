@@ -128,7 +128,7 @@ class Timetable:
                 i += 1
 
             programs.append(next_program)
-            present += presentation.length
+            present += next_program.length
 
         return cls(programs)
 
