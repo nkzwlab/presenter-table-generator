@@ -125,9 +125,9 @@ class Timetable:
             else:
                 presentation.start_time = present
                 next_program = presentation
+                i += 1
 
             programs.append(next_program)
-            i += 1
             present += presentation.length
 
         return cls(programs)
