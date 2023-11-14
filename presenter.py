@@ -3,13 +3,15 @@ from typing import Literal
 
 from .markdown import Row, HeaderRow
 
+PresentationKind = Literal["wip", "term"]
+
 
 @dataclass
 class Presenter:
     loginname: str
     kg: str
+    kind: PresentationKind
     title: str = "自分の研究タイトル"
-    kind: Literal["wip", "term"]
 
     column_order = ["kind", "loginname", "kg", "title"]
 
