@@ -1,5 +1,20 @@
 config:
   presentation_page_root: "./term_mid"
+  start_time: "11:10"
+  presentation_time:
+    wip: 10
+    term: 15
+  breaks:
+    - before: "11:35"
+      length: 25
+      title: ほげ
+    - after: "12:20"
+      length: 40
+      title: お昼
+    - before: "14:30"
+      length: 15
+    - before: "16:15"
+      length: 15
 
 presenters:
   wip:
@@ -8,7 +23,23 @@ presenters:
       - mirai: "ほげほげ研究"
     d-hacks:
       - tsukky
+      - tsukky
+      - tsukky
+      - tsukky
+      - tsukky
+      - tsukky
+      - tsukky
+      - tsukky
+      - tsukky
+      - tsukky
+      - tsukky
+      - tsukky
 
   term:
     sensys:
+      - dang0
+      - dang0
+      - dang0
+      - dang0
+      - dang0
       - dang0

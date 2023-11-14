@@ -10,16 +10,11 @@ class Row:
         column_order = self.column_order
         if column_order is None:
             column_order = self.columns.keys()
-        else:
-            # Validate if the all columns actually exists in dict
-            for column in column_order:
-                if column not in self.columns:
-                    raise KeyError(f"Column {column} does not exist in dict")
 
         row_str = ""
 
         for column in column_order:
-            value = self.columns[column]
+            value = self.columns.get(column, "")
             row_str += f"| {value} "
 
         row_str += "|"

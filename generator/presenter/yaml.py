@@ -1,11 +1,64 @@
+from datetime import timedelta
 from typing import Any
 
 import yaml
 
-from .presenter import Presenter, Presenters, PresentationKind
+from .config import Break, Config
+from lib.date import datetime_from_time
+from .presenter import Presentation, Timetable, PresentationKind
 
 
-def from_yaml(filename: str) -> Presenters:
+def break_from_dict(data: dict) -> Break:
+    before = data.get("before")
+    after = data.get("after")
+
+    if before is not None:
+        before = datetime_from_time(before)
+    if after is not None:
+        after = datetime_from_time(after)
+
+    length = int(data["length"])
+    length = timedelta(minutes=length)
+
+    title = data.get("title")
+
+    return Break(length, before, after, title)
+
+
+class YamlConfig(Config):
+    def __init__(self, config: dict):
+        root_path = config.get("presentation_page_root")
+
+        start_time = config.get("start_time")
+        if start_time is not None:
+            start_time = datetime_from_time(start_time)
+
+        presentation_time = config.get("presentation_time")
+        if isinstance(presentation_time, int):
+            presentation_time = timedelta(minutes=presentation_time)
+        elif isinstance(presentation_time, dict):
+            presentation_time = {
+                kind: timedelta(minutes=minutes)
+                for kind, minutes in presentation_time.items()
+            }
+
+        breaks = config.get("breaks")
+        if breaks is not None:
+            bs = []
+            for brek in breaks:
+                b = break_from_dict(brek)
+                bs.append(b)
+            breaks = bs
+
+        super().__init__(
+            page_root=root_path,
+            start_time=start_time,
+            presentation_time=presentation_time,
+            breaks=breaks,
+        )
+
+
+def from_yaml(filename: str, randomize: bool = False) -> Timetable:
     data = None
 
     with open(filename, "r") as f:
@@ -19,16 +72,18 @@ def from_yaml(filename: str) -> Presenters:
 
     presenters_data = data["presenters"]
 
-    config = data.get("config")
-    root_path = None
-    if config is not None:
-        root_path = config.get("presentation_page_root")
+    config_dict = data.get("config")
+    config = YamlConfig(config_dict)
+    print("Successfully read the config:", config)
 
-    presenters = from_dict(presenters_data, root_path)
+    presenters_list = get_presenters(presenters_data, config)
+
+    presenters = Timetable.create(presenters_list, config, randomize=randomize)
+
     return presenters
 
 
-def from_dict(data: dict[str, Any], root_path: str | None = None) -> Presenters:
+def get_presenters(data: dict[str, Any], config: Config) -> Timetable:
     """
 
     Args:
@@ -49,34 +104,46 @@ def from_dict(data: dict[str, Any], root_path: str | None = None) -> Presenters:
         list[Presenter]
     """
 
-    presenters_list = []
+    presenter_list = []
 
     for kind, kgs in data.items():
         for kg, presenters in kgs.items():
             for person in presenters:
-                presenter = per_person(kind, kg, person, root_path)
-                presenters_list.append(presenter)
+                presenter = per_person(kind, kg, person, config)
+                presenter_list.append(presenter)
 
-    presenters = Presenters(presenters_list)
-    return presenters
+    return presenter_list
 
 
 def per_person(
-    kind: PresentationKind, kg: str, person: str | dict[str, str], root_path: str | None
-) -> Presenter:
+    kind: PresentationKind,
+    kg: str,
+    person: str | dict[str, str],
+    config: Config,
+) -> Presentation:
     loginname = person
-    page_path = f"{root_path}/{loginname}"
+    page_path = f"{config.page_root}/{loginname}"
+    length = config.presentation_length(kind)
     presenter = None
 
     if isinstance(person, dict):
         # It must be `"loginname": "title"` form
         keys = list(person.keys())
         loginname = keys[0]
-        page_path = f"{root_path}/{loginname}"
+        page_path = f"{config.page_root}/{loginname}"
         title = person.get(loginname)
 
-        presenter = Presenter(loginname, kg, kind, page_path, title=title)
+        presenter = Presentation(
+            kind=kind,
+            title=title,
+            length=length,
+            loginname=loginname,
+            kg=kg,
+            page_path=page_path,
+        )
     else:
-        presenter = Presenter(loginname, kg, kind, page_path)
+        presenter = Presentation(
+            kind=kind, length=length, loginname=loginname, kg=kg, page_path=page_path
+        )
 
     return presenter
