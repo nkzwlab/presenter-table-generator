@@ -74,7 +74,6 @@ def from_yaml(filename: str, randomize: bool = False) -> Timetable:
 
     config_dict = data.get("config")
     config = YamlConfig(config_dict)
-    print("Successfully read the config:", config)
 
     presenters_list = get_presenters(presenters_data, config)
 
