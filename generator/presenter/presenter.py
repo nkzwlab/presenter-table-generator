@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Literal
 
-from .markdown import Row, HeaderRow
+from format.markdown import Row, HeaderRow
 
 PresentationKind = Literal["wip", "term"]
 

@@ -2,16 +2,16 @@ from typing import Any
 
 import yaml
 
-from ..presenter import Presenter, PresentationKind
+from .presenter import Presenter, PresentationKind
 
 
 def from_yaml(filename: str) -> list[Presenter]:
     data = None
 
     with open(filename, "r") as f:
-        data = yaml.load(f)
+        data = yaml.safe_load(f)
 
-    if isinstance(data, dict):
+    if not isinstance(data, dict):
         raise TypeError("Invalid yaml input. It must be a dict.")
 
     # Ensure dict type for completion while development
@@ -59,7 +59,9 @@ def per_person(
     loginname = person
     title = None
     if isinstance(person, dict):
-        loginname = person.keys()[0]
+        # It must be `"loginname": "title"` form
+        keys = list(person.keys())
+        loginname = keys[0]
         title = person.get(loginname)
 
     presenter = Presenter(loginname, kg, kind, title=title)
