@@ -2,10 +2,10 @@ from typing import Any
 
 import yaml
 
-from .presenter import Presenter, PresentationKind
+from .presenter import Presenter, Presenters, PresentationKind
 
 
-def from_yaml(filename: str) -> list[Presenter]:
+def from_yaml(filename: str) -> Presenters:
     data = None
 
     with open(filename, "r") as f:
@@ -21,7 +21,7 @@ def from_yaml(filename: str) -> list[Presenter]:
     return presenters
 
 
-def from_dict(data: dict[str, Any]) -> list[Presenter]:
+def from_dict(data: dict[str, Any]) -> Presenters:
     """
 
     Args:
@@ -42,15 +42,16 @@ def from_dict(data: dict[str, Any]) -> list[Presenter]:
         list[Presenter]
     """
 
-    output = []
+    presenters_list = []
 
     for kind, kgs in data.items():
         for kg, presenters in kgs.items():
             for person in presenters:
                 presenter = per_person(kind, kg, person)
-                output.append(presenter)
+                presenters_list.append(presenter)
 
-    return output
+    presenters = Presenters(presenters_list)
+    return presenters
 
 
 def per_person(
