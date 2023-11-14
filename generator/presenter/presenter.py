@@ -21,6 +21,13 @@ class Presenter:
     def to_row(self):
         return Row(columns=self.dict(), column_order=self.column_order)
 
-    @staticmethod
+    @classmethod
     def header_row(cls):
-        return HeaderRow(cls.column_order)
+        header = {
+            "kind": "種別 / Kind",
+            "loginname": "ログイン名 / Login name",
+            "kg": "KG",
+            "title": "発表タイトル",
+        }
+
+        return HeaderRow(header, cls.column_order)

@@ -28,20 +28,39 @@ class Row:
 
 
 class HeaderRow(Row):
-    def __init__(self, column_names: list[str]):
-        self.columns = {column: column.capitalize() for column in column_names}
+    def __init__(
+        self, column_names: list[str] | dict[str, str], column_order: list[str] | None
+    ):
+        if isinstance(column_names, list):
+            self.columns = {column: column.capitalize() for column in column_names}
+            self.column_order = column_order or column_names
 
-        self.column_order = column_names
+        elif isinstance(column_names, dict):
+            self.columns = column_names
+            self.column_order = column_order or column_names.keys()
+
+
+class SeparatorRow(Row):
+    def __init__(self, length: int):
+        self.columns = {str(i): "---" for i in range(length)}
+        self.column_order = [str(i) for i in range(length)]
 
 
 class Table:
     header_row: HeaderRow
+    separator_row: SeparatorRow
     rows: list[Row]
 
     def __init__(self, header_row: HeaderRow, rows: list[Row] | None = None):
         self.header_row = header_row
+        self.separator_row = SeparatorRow(len(header_row.column_order))
 
         if rows is None:
             self.rows = []
         else:
             self.rows = rows
+
+    def __str__(self):
+        rows = [self.header_row, self.separator_row] + self.rows
+        rows_str = [str(row) for row in rows]
+        return "\n".join(rows_str)
