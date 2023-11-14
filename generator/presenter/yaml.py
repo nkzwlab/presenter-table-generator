@@ -17,11 +17,18 @@ def from_yaml(filename: str) -> Presenters:
     # Ensure dict type for completion while development
     data = dict(data)
 
-    presenters = from_dict(data)
+    presenters_data = data["presenters"]
+
+    config = data.get("config")
+    root_path = None
+    if config is not None:
+        root_path = config.get("presentation_page_root")
+
+    presenters = from_dict(presenters_data, root_path)
     return presenters
 
 
-def from_dict(data: dict[str, Any]) -> Presenters:
+def from_dict(data: dict[str, Any], root_path: str | None = None) -> Presenters:
     """
 
     Args:
@@ -47,7 +54,7 @@ def from_dict(data: dict[str, Any]) -> Presenters:
     for kind, kgs in data.items():
         for kg, presenters in kgs.items():
             for person in presenters:
-                presenter = per_person(kind, kg, person)
+                presenter = per_person(kind, kg, person, root_path)
                 presenters_list.append(presenter)
 
     presenters = Presenters(presenters_list)
@@ -55,19 +62,21 @@ def from_dict(data: dict[str, Any]) -> Presenters:
 
 
 def per_person(
-    kind: PresentationKind, kg: str, person: str | dict[str, str]
+    kind: PresentationKind, kg: str, person: str | dict[str, str], root_path: str | None
 ) -> Presenter:
     loginname = person
+    page_path = f"{root_path}/{loginname}"
     presenter = None
 
     if isinstance(person, dict):
         # It must be `"loginname": "title"` form
         keys = list(person.keys())
         loginname = keys[0]
+        page_path = f"{root_path}/{loginname}"
         title = person.get(loginname)
 
-        presenter = Presenter(loginname, kg, kind, title=title)
+        presenter = Presenter(loginname, kg, kind, page_path, title=title)
     else:
-        presenter = Presenter(loginname, kg, kind)
+        presenter = Presenter(loginname, kg, kind, page_path)
 
     return presenter

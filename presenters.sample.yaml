@@ -1,10 +1,14 @@
-wip:
-  one:
-    - kino-ma
-    - mirai: "ほげほげ研究"
-  d-hacks:
-    - tsukky
+config:
+  presentation_page_root: "./term_mid"
 
-term:
-  sensys:
-    - dang0
+presenters:
+  wip:
+    one:
+      - kino-ma
+      - mirai: "ほげほげ研究"
+    d-hacks:
+      - tsukky
+
+  term:
+    sensys:
+      - dang0

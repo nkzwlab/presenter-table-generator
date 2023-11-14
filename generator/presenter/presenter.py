@@ -12,15 +12,23 @@ class Presenter:
     loginname: str
     kg: str
     kind: PresentationKind
+    page_path: str
     title: str = "自分の研究タイトル"
 
     column_order = ["kind", "loginname", "kg", "title"]
 
     def dict(self):
-        return self.__dict__
+        return {
+            "kind": self.kind,
+            "loginname": self.loginname,
+            "kg": self.kg,
+            "title": self.title,
+        }
 
     def to_row(self):
-        return Row(columns=self.dict(), column_order=self.column_order)
+        columns = self.dict()
+        columns["title"] = f"[{columns['title']}]({self.page_path})"
+        return Row(columns=columns, column_order=self.column_order)
 
     @classmethod
     def header_row(cls):
