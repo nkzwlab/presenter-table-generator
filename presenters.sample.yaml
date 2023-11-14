@@ -1,45 +1,50 @@
 config:
+  # テーブル内に埋め込むリンクをどこに作るかのオプション
+  # たとえば ./term_mid なら ./term_mid/kino-ma でリンクが作られる
   presentation_page_root: "./term_mid"
   start_time: "11:10"
   presentation_time:
     wip: 10
     term: 15
   breaks:
-    - before: "11:35"
-      length: 25
-      title: ほげ
+    # after で指定すると、その時間以降の一番早いタイミングで休憩が入る
     - after: "12:20"
       length: 40
-      title: お昼
+      title: お昼休憩
+    # before で指定すると、その時間以前の一番遅いタイミングで休憩が入る
+    # 休憩の終了時刻ではなく開始時刻が指定時間になることに注意
     - before: "14:30"
       length: 15
     - before: "16:15"
       length: 15
 
 presenters:
+  # wip または term に対応。小文字オンリー
   wip:
-    one:
+    # テーブルでの表記がこの KG 名そのままになるので、大文字・小文字が正しくなるよう注意する
+    ONE:
       - kino-ma
+      # 既知のタイトルがあれば指定可能
       - mirai: "ほげほげ研究"
-    d-hacks:
+    D-Hacks:
       - tsukky
-      - tsukky
-      - tsukky
-      - tsukky
-      - tsukky
-      - tsukky
-      - tsukky
-      - tsukky
-      - tsukky
-      - tsukky
-      - tsukky
-      - tsukky
+    WellComp:
+      - kino-ma
+    SenSys:
+      - kino-ma
 
   term:
-    sensys:
+    SenSys:
       - dang0
-      - dang0
-      - dang0
-      - dang0
-      - dang0
-      - dang0
+    ONE:
+      - kino-ma
+      - kino-ma
+      - kino-ma
+      - kino-ma
+      - kino-ma
+      - kino-ma
+      - kino-ma
+      - kino-ma
+      - kino-ma
+      - kino-ma
+      - kino-ma
