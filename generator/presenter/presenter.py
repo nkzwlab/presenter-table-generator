@@ -53,7 +53,7 @@ class Presentation(Program):
         title = f"[{self.title}]({self.page_path})"
 
         return {
-            "kind": self.kind,
+            "kind": self.kind.upper(),
             "duration": duration,
             "loginname": self.loginname,
             "kg": self.kg,
