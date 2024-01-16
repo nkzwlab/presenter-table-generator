@@ -5,7 +5,7 @@ import yaml
 
 from .config import Break, Config
 from lib.date import datetime_from_time
-from .presenter import Presentation, Timetable, PresentationKind
+from .presenter import Presentation, Timetable, PresentationKind, FixedPresentation
 
 
 def break_from_dict(data: dict) -> Break:
@@ -126,20 +126,35 @@ def per_person(
     presenter = None
 
     if isinstance(person, dict):
-        # It must be `"loginname": "title"` form
-        keys = list(person.keys())
-        loginname = keys[0]
-        page_path = f"{config.page_root}/{loginname}"
-        title = person.get(loginname)
+        # - name: "login name"
+        #   before: "hh:mm" | null
+        #   after: "hh:mm" | null
+        #   title: "title" | null
 
-        presenter = Presentation(
-            kind=kind,
-            title=title,
-            length=length,
-            loginname=loginname,
-            kg=kg,
-            page_path=page_path,
-        )
+        loginname = person["name"]
+        after = person.get("after") or config.start_time
+        before = person.get("before")
+        title = person.get("title")
+        if after or before:
+            presenter = FixedPresentation(
+                kind=kind,
+                title=title,
+                length=length,
+                loginname=loginname,
+                kg=kg,
+                page_path=page_path,
+                after=after,
+                before=before,
+            )
+        else:
+            presenter = Presentation(
+                kind=kind,
+                title=title,
+                length=length,
+                loginname=loginname,
+                kg=kg,
+                page_path=page_path,
+            )
     else:
         presenter = Presentation(
             kind=kind, length=length, loginname=loginname, kg=kg, page_path=page_path
