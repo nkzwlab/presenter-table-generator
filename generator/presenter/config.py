@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
+from .time import good_to_toke
 from .types import PresentationKind
 
 
@@ -26,15 +27,7 @@ class Break:
         self.title = title
 
     def is_good_to_toke(self, present: datetime, next_end: datetime) -> bool:
-        good = True
-
-        if self.after is not None:
-            good = good and self.after <= present
-
-        if self.before is not None:
-            good = good and present <= self.before < next_end
-
-        return good
+        return good_to_toke(present, next_end, after=self.after, before=self.before)
 
     @property
     def start(self) -> datetime:
