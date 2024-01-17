@@ -1,5 +1,4 @@
 import random
-import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import cmp_to_key
@@ -16,7 +15,7 @@ from .types import PresentationKind
 class Program:
     kind: PresentationKind
     title: str
-    length: int
+    length: timedelta
     start_time: datetime | None
 
     @property
@@ -95,6 +94,7 @@ class Presentation(Program):
 
 @dataclass(kw_only=True)
 class FixedPresentation(FixedProgram, Presentation):
+    start_time: datetime | None = None
     pass
 
 
@@ -104,7 +104,14 @@ class BreakTime(FixedProgram):
 
     @staticmethod
     def from_config_break(b: ConfigBreak) -> "BreakTime":
-        return BreakTime(kind="break", title=b.title, length=b.length)
+        return BreakTime(
+            kind="break",
+            title=b.title,
+            length=b.length,
+            start_time=None,
+            after=b.after,
+            before=b.before,
+        )
 
     def dict(self) -> dict:
         out = super().dict()
@@ -125,7 +132,7 @@ class Timetable:
         cls, presenters: list[Presentation], config: Config, randomize: bool = False
     ):
         fixed_presentations = pop_fixed_presenters(presenters)
-        break_programs = map(lambda b: BreakTime.from_config_break, config.breaks)
+        break_programs = map(lambda b: BreakTime.from_config_break(b), config.breaks)
 
         fixed_programs = fixed_presentations + list(break_programs)
         fixed_programs.sort(key=cmp_to_key(compare_fixed_program))
@@ -212,14 +219,10 @@ def compare_fixed_program(a: FixedProgram, b: FixedProgram) -> int:
         return 1
 
     zero = datetime.fromtimestamp(0)
-    inf = datetime.fromtimestamp(sys.maxsize)
+    inf = datetime.fromtimestamp(2**32 - 1)
 
-    a_must_start = (
-        a.before - timedelta(minutes=a.length) if a.before is not None else inf
-    )
-    b_must_start = (
-        b.before - timedelta(minutes=b.length) if b.before is not None else inf
-    )
+    a_must_start = a.before - a.length if a.before is not None else inf
+    b_must_start = b.before - b.length if b.before is not None else inf
 
     # yaml.per_person で after には初期値 config.start_time を入れているが、念の為初期値 zero を入れておく
     a_ends_after = (

@@ -132,9 +132,12 @@ def per_person(
         #   title: "title" | null
 
         loginname = person["name"]
-        after = person.get("after") or config.start_time
+        after = person.get("after")
+        after = after and datetime_from_time(after) or config.start_time
         before = person.get("before")
+        before = before and datetime_from_time(before)
         title = person.get("title")
+
         if after or before:
             presenter = FixedPresentation(
                 kind=kind,
