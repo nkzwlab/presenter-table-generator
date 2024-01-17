@@ -138,17 +138,11 @@ class Timetable:
     def create(
         cls, presenters: list[Presentation], config: Config, randomize: bool = False
     ):
-        a = len(presenters)
-        print(presenters)
         fixed_presentations = pop_fixed_presenters(presenters)
-        print(presenters)
-        b = len(presenters)
-        print(a, b)
         break_programs = map(lambda b: BreakTime.from_config_break(b), config.breaks)
 
         fixed_programs = fixed_presentations + list(break_programs)
         fixed_programs.sort(key=cmp_to_key(compare_fixed_program))
-        print(fixed_programs)
 
         if randomize:
             random.shuffle(presenters)
@@ -163,8 +157,6 @@ class Timetable:
             next_end = present + presentation.length
 
             next_program = None
-            print(i, next_fixed_program)
-            # print(presenters)
 
             # 次のプログラムが存在し、かつ休憩を取るのにいいタイミングであれば休憩を入れる
             if i + 1 < len(presenters) and next_fixed_program.is_good_to_toke(
@@ -207,7 +199,6 @@ def pop_fixed_presenters(presenters: list[Presentation]) -> list[FixedPresentati
     for i, presenter in enumerate(reversed(presenters)):
         idx = len(presenters) - 1 - i
         if isinstance(presenter, FixedProgram):
-            print(f"popped presenter {idx} = {presenter}")
             presenters.pop(idx)
             fixed_presenters.append(presenter)
 
