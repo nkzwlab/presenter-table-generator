@@ -95,7 +95,6 @@ class Presentation(Program):
 @dataclass(kw_only=True)
 class FixedPresentation(FixedProgram, Presentation):
     start_time: datetime | None = None
-    pass
 
 
 @dataclass(kw_only=True)
@@ -131,11 +130,17 @@ class Timetable:
     def create(
         cls, presenters: list[Presentation], config: Config, randomize: bool = False
     ):
+        a = len(presenters)
+        print(presenters)
         fixed_presentations = pop_fixed_presenters(presenters)
+        print(presenters)
+        b = len(presenters)
+        print(a, b)
         break_programs = map(lambda b: BreakTime.from_config_break(b), config.breaks)
 
         fixed_programs = fixed_presentations + list(break_programs)
         fixed_programs.sort(key=cmp_to_key(compare_fixed_program))
+        print(fixed_programs)
 
         if randomize:
             random.shuffle(presenters)
@@ -150,6 +155,8 @@ class Timetable:
             next_end = present + presentation.length
 
             next_program = None
+            print(i, next_fixed_program)
+            # print(presenters)
 
             # 次のプログラムが存在し、かつ休憩を取るのにいいタイミングであれば休憩を入れる
             if i + 1 < len(presenters) and next_fixed_program.is_good_to_toke(
@@ -190,8 +197,10 @@ def pop_fixed_presenters(presenters: list[Presentation]) -> list[FixedPresentati
 
     # 要素を取り除くために pop を使いたいので、 reversed で後ろからループする
     for i, presenter in enumerate(reversed(presenters)):
+        idx = len(presenters) - 1 - i
         if isinstance(presenter, FixedProgram):
-            presenters.pop(i)
+            print(f"popped presenter {idx} = {presenter}")
+            presenters.pop(idx)
             fixed_presenters.append(presenter)
 
     return fixed_presenters
@@ -213,7 +222,7 @@ def compare_fixed_program(a: FixedProgram, b: FixedProgram) -> int:
             return 1
 
     # 全く時間が被らない場合は無条件に前後を決定する
-    if None not in [a.before, b.after] and a.before >= b.after:
+    if None not in [a.before, b.after] and a.before <= b.after:
         return -1
     if None not in [a.after, b.before] and a.after >= b.before:
         return 1
@@ -225,12 +234,8 @@ def compare_fixed_program(a: FixedProgram, b: FixedProgram) -> int:
     b_must_start = b.before - b.length if b.before is not None else inf
 
     # yaml.per_person で after には初期値 config.start_time を入れているが、念の為初期値 zero を入れておく
-    a_ends_after = (
-        a.after + timedelta(minutes=a.length) if a.after is not None else zero
-    )
-    b_ends_after = (
-        b.after + timedelta(minutes=b.length) if b.after is not None else zero
-    )
+    a_ends_after = a.after + a.length if a.after is not None else zero
+    b_ends_after = b.after + b.length if b.after is not None else zero
 
     # 一つ目の発表が始まらないといけない時間を二つ目の最短終了時刻が上回る場合、一つ目を優先する
     if a_must_start <= b_ends_after:

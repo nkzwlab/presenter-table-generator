@@ -132,6 +132,7 @@ def per_person(
         #   title: "title" | null
 
         loginname = person["name"]
+        page_path = f"{config.page_root}/{loginname}"
         after = person.get("after")
         after = after and datetime_from_time(after) or config.start_time
         before = person.get("before")
