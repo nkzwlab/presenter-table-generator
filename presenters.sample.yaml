@@ -25,7 +25,8 @@ presenters:
     ONE:
       - kino-ma
       # 既知のタイトルがあれば指定可能
-      - mirai: "ほげほげ研究"
+      - name: "mirai"
+        title: "ほげほげ研究"
     D-Hacks:
       - tsukky
     WellComp:
@@ -37,7 +38,15 @@ presenters:
     SenSys:
       - dang0
     ONE:
-      - kino-ma
+      - name: kino-ma
+        # ざっくり固定の時間を指定可能
+        # breaks と同じ形式
+        fixed: true
+        after: "11:10"
+        # 個人ページの作成先
+        page_root: "./wip_mid/kino-ma"
+        # 一緒にタイトルも指定可能
+        title: "ほげほげ研究"
       - kino-ma
       - kino-ma
       - kino-ma
