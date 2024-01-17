@@ -129,10 +129,11 @@ def per_person(
         # - name: "login name"
         #   before: "hh:mm" | null
         #   after: "hh:mm" | null
+        #   page_root: "./path/to/page" | null
         #   title: "title" | null
 
         loginname = person["name"]
-        page_path = f"{config.page_root}/{loginname}"
+        page_path = person.get("page_path") or f"{config.page_root}/{loginname}"
         after = person.get("after")
         after = after and datetime_from_time(after) or config.start_time
         before = person.get("before")
