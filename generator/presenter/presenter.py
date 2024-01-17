@@ -18,6 +18,9 @@ class Program:
     length: timedelta
     start_time: datetime | None
 
+    def __post_init__(self):
+        pass
+
     @property
     def end_time(self) -> datetime:
         if self.start_time is None:
@@ -46,6 +49,7 @@ class FixedProgram(Program):
     before: datetime | None = None
 
     def __post_init__(self):
+        super(FixedProgram, self).__post_init__()
         if self.after is None and self.before is None:
             raise TypeError("FixedProgram: EIther after or before must be specified")
 
@@ -64,6 +68,7 @@ class Presentation(Program):
     column_order = ["kind", "duration", "loginname", "kg", "title"]
 
     def __post_init__(self):
+        super(Presentation, self).__post_init__()
         if self.title is None:
             self.title = "自分の研究タイトル"
 
@@ -95,6 +100,9 @@ class Presentation(Program):
 @dataclass(kw_only=True)
 class FixedPresentation(FixedProgram, Presentation):
     start_time: datetime | None = None
+
+    def __post_init__(self):
+        super(FixedPresentation, self).__post_init__()
 
 
 @dataclass(kw_only=True)
