@@ -195,12 +195,16 @@ class Timetable:
 def pop_fixed_presenters(presenters: list[Presentation]) -> list[FixedPresentation]:
     fixed_presenters = []
 
-    # 要素を取り除くために pop を使いたいので、 reversed で後ろからループする
-    for i, presenter in enumerate(reversed(presenters)):
-        idx = len(presenters) - 1 - i
+    # 要素を取り除くために pop を使いたいので、後ろからループする
+    i = len(presenters) - 1
+    while i >= 0:
+        presenter = presenters[i]
+
         if isinstance(presenter, FixedProgram):
-            presenters.pop(idx)
+            presenters.pop(i)
             fixed_presenters.append(presenter)
+
+        i -= 1
 
     return fixed_presenters
 
